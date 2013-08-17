@@ -119,6 +119,7 @@ int main(void)
   wdt_disable();
 
   cpu_init();
+  jtag_disable();
   led_init();
   anyio_init(115200, false);
   TWI_Init(TWI_BIT_PRESCALE_1, TWI_BITLENGTH_FROM_FREQ(1, 200000));
