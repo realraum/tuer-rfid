@@ -30,10 +30,21 @@
 
 uint8_t step_table [] =
 {
+    /* full steps */
+  /* 10, // 1010 */
+  /* 9,  // 1001 */
+  /* 5,  // 0101 */
+  /* 6,  // 0110 */
+
+    /* half steps */
   10, // 1010
+  8,  // 1000
   9,  // 1001
+  1,  // 0001
   5,  // 0101
+  4,  // 0100
   6,  // 0110
+  2,  // 0010
 };
 
 #define STEPPER_PORT PORTF
@@ -45,8 +56,8 @@ uint8_t step_table [] =
 #define STEPPER_OUTPUT_BITMASK (~(0xF << STEPPER_FIRST_BIT ))
 
 volatile uint16_t step_cnt = 0;
-#define STEP_CNT_STOP (LENGTH_STEP_TABLE*400)
-#define STEP_CNT_OFF  (STEP_CNT_STOP + 125)
+#define STEP_CNT_STOP (LENGTH_STEP_TABLE*800)
+#define STEP_CNT_OFF  (STEP_CNT_STOP + 250)
 stepper_direction_t step_direction = dir_open;
 
 inline void stepper_stop(void)
@@ -60,6 +71,10 @@ static inline uint8_t stepper_handle(void)
 {
   static uint8_t step_idx = 0;
 
+  uint8_t stepper_output = step_table[step_idx];
+  stepper_output <<= STEPPER_FIRST_BIT;
+  STEPPER_PORT = (STEPPER_PORT & STEPPER_OUTPUT_BITMASK ) | stepper_output;
+
   limits_t l = limits_get();
   if((step_direction == dir_open && l == open) ||
      (step_direction == dir_close && l == close) || l == both)
@@ -72,10 +87,6 @@ static inline uint8_t stepper_handle(void)
     eventqueue_push(move_timeout);
     return 0;
   }
-
-  uint8_t stepper_output = step_table[step_idx];
-  stepper_output <<= STEPPER_FIRST_BIT;
-  STEPPER_PORT = (STEPPER_PORT & STEPPER_OUTPUT_BITMASK ) | stepper_output;
 
   step_cnt++;
   if(step_cnt >= STEP_CNT_OFF) {
@@ -103,7 +114,7 @@ uint8_t stepper_start(stepper_direction_t direction)
   STEPPER_PORT |= (1<<STEPPER_ENABLE_A_BIT) | (1<<STEPPER_ENABLE_B_BIT);
   TCCR1A = 0;                    // prescaler 1:256, WGM = 4 (CTC)
   TCCR1B = 1<<WGM12 | 1<<CS12;   //
-  OCR1A = 124;                   // (1+124)*256 = 32000 -> 2 ms @ 16 MHz
+  OCR1A = 42;                    // this value should be between 40 and 85
   TCNT1 = 0;
   TIMSK1 = 1<<OCIE1A;
 
