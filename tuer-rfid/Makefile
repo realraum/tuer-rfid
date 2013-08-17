@@ -26,6 +26,8 @@ BOARD_TYPE := teenstep
 OBJ := $(NAME).o heartbeat.o stepper.o ledmatrix.o sl018.o keystore.o statemachine.o eventqueue.o limits.o manual.o ajar.o
 LIBS := util led lufa-descriptor-usbserial anyio
 EXTERNAL_LIBS := lufa
+RESET_FUNC := ../tools/reset_lufa_cdc
+RESET_PARAM := 'r'
 
 LUFA_PATH := ../contrib/LUFA-120219
 LUFA_OPTS  = -D USB_DEVICE_ONLY
