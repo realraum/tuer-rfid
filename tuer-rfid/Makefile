@@ -22,7 +22,7 @@
 ##
 
 NAME := tuer-rfid
-BOARD_TYPE := teensy2
+BOARD_TYPE := teenstep
 OBJ := $(NAME).o heartbeat.o stepper.o ledmatrix.o sl018.o keystore.o statemachine.o eventqueue.o limits.o manual.o ajar.o
 LIBS := util led lufa-descriptor-usbserial anyio
 EXTERNAL_LIBS := lufa

@@ -25,10 +25,10 @@
 #include "manual.h"
 #include "eventqueue.h"
 
-#define MANUAL_PIN PINF
-#define MANUAL_PORT PORTF
-#define MANUAL_DDR DDRF
-#define MANUAL_BIT 0
+#define MANUAL_PIN PIND
+#define MANUAL_PORT PORTD
+#define MANUAL_DDR DDRD
+#define MANUAL_BIT 7
 
 #define MANUAL_LP_MAX 255
 

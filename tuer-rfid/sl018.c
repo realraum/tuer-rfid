@@ -27,8 +27,8 @@
 #include <util/delay.h>
 
 #define SL018_TWI_ADDR  0xA0
-#define SL018_TAG_STA_PIN PIND
-#define SL018_TAG_STA_BIT 7
+#define SL018_TAG_STA_PIN PINE
+#define SL018_TAG_STA_BIT 6
 #define CARD_PRESENT (!((SL018_TAG_STA_PIN >> SL018_TAG_STA_BIT) & 1))
 #define MAX_UID_LEN 7
 

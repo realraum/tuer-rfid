@@ -39,7 +39,8 @@ uint8_t step_table [] =
 #define STEPPER_PORT PORTF
 #define STEPPER_DDR DDRF
 #define STEPPER_FIRST_BIT 4
-#define STEPPER_ENABLE_BIT 1
+#define STEPPER_ENABLE_A_BIT 0
+#define STEPPER_ENABLE_B_BIT 1
 #define LENGTH_STEP_TABLE (sizeof(step_table)/sizeof(uint8_t))
 #define STEPPER_OUTPUT_BITMASK (~(0xF << STEPPER_FIRST_BIT ))
 
@@ -50,7 +51,7 @@ stepper_direction_t step_direction = dir_open;
 
 inline void stepper_stop(void)
 {
-  STEPPER_PORT &= ~(0xF << STEPPER_FIRST_BIT | 1<<STEPPER_ENABLE_BIT);
+  STEPPER_PORT &= ~(0xF << STEPPER_FIRST_BIT | 1<<STEPPER_ENABLE_A_BIT | 1<<STEPPER_ENABLE_B_BIT);
   TCCR1B = 0; // no clock source
   TIMSK1 = 0; // disable timer interrupt
 }
@@ -91,15 +92,15 @@ static inline uint8_t stepper_handle(void)
 
 void stepper_init(void)
 {
-  STEPPER_PORT &= ~(0xF << STEPPER_FIRST_BIT | 1<<STEPPER_ENABLE_BIT);
-  STEPPER_DDR |= (0xF << STEPPER_FIRST_BIT) | (1<<STEPPER_ENABLE_BIT);
+  STEPPER_PORT &= ~(0xF << STEPPER_FIRST_BIT | 1<<STEPPER_ENABLE_A_BIT | 1<<STEPPER_ENABLE_B_BIT);
+  STEPPER_DDR |= (0xF << STEPPER_FIRST_BIT) | (1<<STEPPER_ENABLE_A_BIT) | (1<<STEPPER_ENABLE_B_BIT);
 }
 
 uint8_t stepper_start(stepper_direction_t direction)
 {
   step_cnt = 0;
   step_direction = direction;
-  STEPPER_PORT |= 1<<STEPPER_ENABLE_BIT;
+  STEPPER_PORT |= (1<<STEPPER_ENABLE_A_BIT) | (1<<STEPPER_ENABLE_B_BIT);
   TCCR1A = 0;                    // prescaler 1:256, WGM = 4 (CTC)
   TCCR1B = 1<<WGM12 | 1<<CS12;   //
   OCR1A = 124;                   // (1+124)*256 = 32000 -> 2 ms @ 16 MHz
