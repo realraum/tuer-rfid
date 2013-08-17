@@ -184,37 +184,37 @@ uint8_t sl018_cmd(const uint8_t* twi_send_buf)
 }
 
 void sl018_read_card_uid(uid_t * uid)
-{ 
+{
   uid->length=0;
   uid->buffer=NULL;
-  printf( "Info(card): "); 
-  if(!sl018_cmd(SL018_CMD_ComSelectCard)) 
-  { 
-    uint8_t uid_len = twi_recv_msg->len - sizeof(twi_recv_msg->command) - sizeof(twi_recv_msg->status) - 1; 
-    if(uid_len == 255 || uid_len > MAX_UID_LEN) { 
-      printf(" received UID length (%d) is to big for keystore \n\r", uid_len); 
-      return; 
-    } 
-    uint8_t type = twi_recv_msg->data[uid_len]; 
-    uint8_t expected_uid_len = SL018_tagtype_to_uidlen(type); 
-    if(expected_uid_len != uid_len) { 
-      printf(" Invalid uid length (%d) for tag type: %s\n\r", uid_len, SL018_tagtype_tostring(type)); 
-      return; 
-    }     
- 
-    for (uint8_t pos=0; pos<uid_len; pos++) 
-      printf("%02X",twi_recv_msg->data[uid_len-pos-1]); 
-    printf( ", %s\n\r", SL018_tagtype_tostring(type)); 
- 
-    if (0 < type && type < 7) { 
+  printf( "Info(card): ");
+  if(!sl018_cmd(SL018_CMD_ComSelectCard))
+  {
+    uint8_t uid_len = twi_recv_msg->len - sizeof(twi_recv_msg->command) - sizeof(twi_recv_msg->status) - 1;
+    if(uid_len == 255 || uid_len > MAX_UID_LEN) {
+      printf(" received UID length (%d) is to big for keystore \n\r", uid_len);
+      return;
+    }
+    uint8_t type = twi_recv_msg->data[uid_len];
+    uint8_t expected_uid_len = SL018_tagtype_to_uidlen(type);
+    if(expected_uid_len != uid_len) {
+      printf(" Invalid uid length (%d) for tag type: %s\n\r", uid_len, SL018_tagtype_tostring(type));
+      return;
+    }
+
+    for (uint8_t pos=0; pos<uid_len; pos++)
+      printf("%02X",twi_recv_msg->data[uid_len-pos-1]);
+    printf( ", %s\n\r", SL018_tagtype_tostring(type));
+
+    if (0 < type && type < 7) {
       uid->length= uid_len;
-      uid->buffer=twi_recv_msg->data; 
-    } else { 
-      printf("Info(card): Ignoring unknown card type %02x\n\r",type); 
-    } 
-  }   
-} 
- 
+      uid->buffer=twi_recv_msg->data;
+    } else {
+      printf("Info(card): Ignoring unknown card type %02x\n\r",type);
+    }
+  }
+}
+
 void sl018_set_led(uint8_t on)
 {
   if(on)

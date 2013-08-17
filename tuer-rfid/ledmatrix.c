@@ -54,7 +54,7 @@ void ledmatrix_stop_timer(void)
 }
 
 void ledmatrix_off_init(void)
-{  
+{
   LEDMATRIX_PORT = LEDMATRIX_MASK;
   LEDMATRIX_PORT |= 1<<LEDMATRIX_RED | 1<<LEDMATRIX_GREEN;
 }
@@ -184,7 +184,7 @@ void ledmatrix_init(void)
 
 void ledmatrix_set(ledmatrix_mode_t m)
 {
-  if(m == mode) 
+  if(m == mode)
     return;
 
   mode = m;

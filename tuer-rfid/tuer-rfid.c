@@ -46,12 +46,12 @@
 #include "ajar.h"
 
 void handle_cmd(uint8_t cmd)
-{  
+{
   switch(cmd) {
-    case 'r': 
-             reset2bootloader(); 
+    case 'r':
+             reset2bootloader();
              break;
-    case 'R': 
+    case 'R':
              if(!sl018_reset())
                printf("ok\n\r");
              break;
@@ -68,16 +68,16 @@ void handle_cmd(uint8_t cmd)
     case 'd': //dump eeprom - this breaks security!
              keystore_dump_to_stdio();
              break;
-    case 'o': 
+    case 'o':
              eventqueue_push(cmd_open);
              break;
-    case 'c': 
+    case 'c':
              eventqueue_push(cmd_close);
              break;
-    case 't': 
+    case 't':
              eventqueue_push(cmd_toggle);
              break;
-    case 's': 
+    case 's':
              printf("Status: %s, %s, %s\n\r", limits_to_string(limits_get()), statemachine_get_state_as_string(), ajar_to_string(ajar_get()));
              break;
     /* case '0': ledmatrix_set(off); break; */
@@ -100,11 +100,11 @@ void handle_card(void)
   if (uid.length)
   {
     printf("Info(card): card(");
-    for (uint8_t pos=0; pos<uid.length; pos++) 
-      printf("%02X",uid.buffer[uid.length-pos-1]); 
+    for (uint8_t pos=0; pos<uid.length; pos++)
+      printf("%02X",uid.buffer[uid.length-pos-1]);
     printf(") ");
 
-    if(keystore_check_card(uid.buffer,uid.length)) {  
+    if(keystore_check_card(uid.buffer,uid.length)) {
       printf("found - opening/closing door\n\r");
       eventqueue_push(card);
     } else {
@@ -130,7 +130,7 @@ int main(void)
   limits_init();
   manual_init();
   ajar_init();
-  sei();  
+  sei();
 
   sl018_reset();
 

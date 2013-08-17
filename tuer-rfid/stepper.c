@@ -28,7 +28,7 @@
 #include "limits.h"
 #include "eventqueue.h"
 
-uint8_t step_table [] = 
+uint8_t step_table [] =
 {
   10, // 1010
   9,  // 1001

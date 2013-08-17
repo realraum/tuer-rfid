@@ -1,4 +1,4 @@
-/*
+g/*
  *  spreadspace avr utils
  *
  *
@@ -108,4 +108,3 @@ uint8_t keystore_check_card(const uint8_t * uid, uint8_t uid_len)
   }
   return valid;
 }
-

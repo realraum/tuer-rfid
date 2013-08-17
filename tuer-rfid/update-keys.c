@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
     fprintf(stderr, "Usage: update-keys <device>\n");
     return -1;
   }
-  
+
   FILE* dev;
   dev = fopen(argv[1], "r+");
   if(!dev) {
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("\nread %d keys from STDIN - filling rest of keystore with invalid keys\n", key_num);
-  
+
   int i;
   for(i=0; i<=sizeof(keyslot_t)-1; ++i) key[i] = 0xFF;
   for(i=key_num; i < EEPROM_SIZE/sizeof(keyslot_t); ++i) {

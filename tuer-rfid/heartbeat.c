@@ -29,7 +29,7 @@
 
 #define HEARTBEAT_DURATION 10 // *10 ms, duration of heartbeat pulse
 #define HEARTBEAT_DELAY 200   // *10 ms, 1/heartbeat-frequency
-uint8_t heartbeat_cnt = 0;                    
+uint8_t heartbeat_cnt = 0;
 uint8_t heartbeat_flag;
 
 #define FASTBEAT_PORT PORTD

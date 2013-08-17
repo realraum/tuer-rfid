@@ -53,8 +53,8 @@ ajar_t ajar_get(void)
     last_state = state;
     lp_cnt = 0;
   }
-  
-  if(last_state) 
+
+  if(last_state)
     return ajar;
   return shut;
 }
@@ -71,6 +71,6 @@ void ajar_task(void)
   ajar_t state = ajar_get();
   if(last_state != state)
     printf("Info(ajar): door is now %s\n\r", ajar_to_string(state));
-  
+
   last_state = state;
 }
