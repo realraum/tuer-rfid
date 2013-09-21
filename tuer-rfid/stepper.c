@@ -31,20 +31,20 @@
 uint8_t step_table [] =
 {
     /* full steps */
-  /* 10, // 1010 */
-  /* 9,  // 1001 */
-  /* 5,  // 0101 */
   /* 6,  // 0110 */
+  /* 5,  // 0101 */
+  /* 9,  // 1001 */
+  /* 10, // 1010 */
 
     /* half steps */
-  10, // 1010
-  8,  // 1000
-  9,  // 1001
-  1,  // 0001
-  5,  // 0101
-  4,  // 0100
-  6,  // 0110
   2,  // 0010
+  6,  // 0110
+  4,  // 0100
+  5,  // 0101
+  1,  // 0001
+  9,  // 1001
+  8,  // 1000
+  10, // 1010
 };
 
 #define STEPPER_PORT PORTF
@@ -56,8 +56,8 @@ uint8_t step_table [] =
 #define STEPPER_OUTPUT_BITMASK (~(0xF << STEPPER_FIRST_BIT ))
 
 volatile uint16_t step_cnt = 0;
-#define STEP_CNT_STOP (LENGTH_STEP_TABLE*800)
-#define STEP_CNT_OFF  (STEP_CNT_STOP + 250)
+#define STEP_CNT_STOP (LENGTH_STEP_TABLE*210)
+#define STEP_CNT_OFF  (STEP_CNT_STOP + 100)
 stepper_direction_t step_direction = dir_open;
 
 inline void stepper_stop(void)
@@ -114,7 +114,7 @@ uint8_t stepper_start(stepper_direction_t direction)
   STEPPER_PORT |= (1<<STEPPER_ENABLE_A_BIT) | (1<<STEPPER_ENABLE_B_BIT);
   TCCR1A = 0;                    // prescaler 1:256, WGM = 4 (CTC)
   TCCR1B = 1<<WGM12 | 1<<CS12;   //
-  OCR1A = 42;                    // this value should be between 40 and 85
+  OCR1A = 150;
   TCNT1 = 0;
   TIMSK1 = 1<<OCIE1A;
 
