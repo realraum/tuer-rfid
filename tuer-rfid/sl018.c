@@ -155,7 +155,7 @@ uint8_t sl018_cmd_raw(const uint8_t* twi_send_buf, bool wait_for_answer)
 uint8_t sl018_reset(void)
 {
   if(sl018_cmd_raw(SL018_CMD_ComReset, 0)) {
-    printf("Error(i2c): bus error\n\r");
+    printf("Error(i2c): bus error\r\n");
     return 1;
   }
   return 0;
@@ -164,20 +164,20 @@ uint8_t sl018_reset(void)
 uint8_t sl018_cmd(const uint8_t* twi_send_buf)
 {
   if(sl018_cmd_raw(twi_send_buf, 1)) {
-    printf("Error(i2c): bus error\n\r");
+    printf("Error(i2c): bus error\r\n");
     return 1;
   } else {
     if(twi_recv_msg->len < 2) {
-      printf("Error(SL018): short message received\n\r");
+      printf("Error(SL018): short message received\r\n");
       return 1;
     }
     if(twi_recv_msg->status) {
-      printf("Error(SL018): '%s','%s'\n\r",SL018_cmd_tostring(twi_recv_msg->command),SL018_status_tostring(twi_recv_msg->status));
+      printf("Error(SL018): '%s','%s'\r\n",SL018_cmd_tostring(twi_recv_msg->command),SL018_status_tostring(twi_recv_msg->status));
       return 1;
     }
     sl018_message_t * twi_send_msg = (sl018_message_t *)twi_send_buf;
     if(twi_send_msg->command != twi_recv_msg->command) {
-      printf("Error(SL018): mismatch of sent and received command code: %02X,%02X\n\r",twi_send_msg->command,twi_recv_msg->command);
+      printf("Error(SL018): mismatch of sent and received command code: %02X,%02X\r\n",twi_send_msg->command,twi_recv_msg->command);
     }
   }
   return 0;
@@ -192,25 +192,25 @@ void sl018_read_card_uid(uid_t * uid)
   {
     uint8_t uid_len = twi_recv_msg->len - sizeof(twi_recv_msg->command) - sizeof(twi_recv_msg->status) - 1;
     if(uid_len == 255 || uid_len > MAX_UID_LEN) {
-      printf(" received UID length (%d) is to big for keystore \n\r", uid_len);
+      printf(" received UID length (%d) is to big for keystore \r\n", uid_len);
       return;
     }
     uint8_t type = twi_recv_msg->data[uid_len];
     uint8_t expected_uid_len = SL018_tagtype_to_uidlen(type);
     if(expected_uid_len != uid_len) {
-      printf(" Invalid uid length (%d) for tag type: %s\n\r", uid_len, SL018_tagtype_tostring(type));
+      printf(" Invalid uid length (%d) for tag type: %s\r\n", uid_len, SL018_tagtype_tostring(type));
       return;
     }
 
     for (uint8_t pos=0; pos<uid_len; pos++)
       printf("%02X",twi_recv_msg->data[uid_len-pos-1]);
-    printf( ", %s\n\r", SL018_tagtype_tostring(type));
+    printf( ", %s\r\n", SL018_tagtype_tostring(type));
 
     if (0 < type && type < 7) {
       uid->length= uid_len;
       uid->buffer=twi_recv_msg->data;
     } else {
-      printf("Info(card): Ignoring unknown card type %02x\n\r",type);
+      printf("Info(card): Ignoring unknown card type %02x\r\n",type);
     }
   }
 }

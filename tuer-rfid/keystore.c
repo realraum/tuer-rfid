@@ -38,7 +38,7 @@ void keystore_flash_from_stdio(void)
 {
   keyslot_t ks;
   uint8_t byte_pos=0;
-  printf("Info(keystore): flashing\n\r");
+  printf("Info(keystore): flashing\r\n");
   fflush(stdout);
   for(uint8_t ks_pos=0;ks_pos<EEPROM_SIZE/sizeof(ks);) {
     anyio_task();
@@ -57,7 +57,7 @@ void keystore_flash_from_stdio(void)
       }
     }
   }
-  printf("\n\r");
+  printf("\r\n");
   fputc(0, stdout);
   led_off();
 }
@@ -69,7 +69,7 @@ void keystore_dump_to_stdio(void)
     eeprom_read_block(&ks,&keystore[ks_pos],sizeof(ks));
     for (uint8_t i=0; i< sizeof(ks); i++)
       printf("%02X",ks[i]);
-    printf("\n\r");
+    printf("\r\n");
   }
 }
 

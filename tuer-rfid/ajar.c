@@ -70,7 +70,7 @@ void ajar_task(void)
 
   ajar_t state = ajar_get();
   if(last_state != state)
-    printf("Info(ajar): door is now %s\n\r", ajar_to_string(state));
+    printf("Info(ajar): door is now %s\r\n", ajar_to_string(state));
 
   last_state = state;
 }

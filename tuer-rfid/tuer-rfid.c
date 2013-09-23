@@ -53,12 +53,12 @@ void handle_cmd(uint8_t cmd)
              break;
     case 'R':
              if(!sl018_reset())
-               printf("ok\n\r");
+               printf("ok\r\n");
              break;
     case 'f': {
                 unsigned char * firmware_str = sl018_get_firmware_version();
                 if(firmware_str)
-                  printf("%s\n\r",firmware_str);
+                  printf("%s\r\n",firmware_str);
 
                 break;
               }
@@ -78,7 +78,7 @@ void handle_cmd(uint8_t cmd)
              eventqueue_push(cmd_toggle);
              break;
     case 's':
-             printf("Status: %s, %s, %s\n\r", limits_to_string(limits_get()), statemachine_get_state_as_string(), ajar_to_string(ajar_get()));
+             printf("Status: %s, %s, %s\r\n", limits_to_string(limits_get()), statemachine_get_state_as_string(), ajar_to_string(ajar_get()));
              break;
     /* case '0': ledmatrix_set(off); break; */
     /* case '1': ledmatrix_set(red); break; */
@@ -89,7 +89,7 @@ void handle_cmd(uint8_t cmd)
     /* case '6': ledmatrix_set(green_blink); break; */
     /* case '7': ledmatrix_set(rg_moving); break; */
     /* case '8': ledmatrix_set(rg_blink); break; */
-    default: printf("Error(cmd): unknown command %02X '%c'\n\r", cmd, cmd); return;
+    default: printf("Error(cmd): unknown command %02X '%c'\r\n", cmd, cmd); return;
   }
 }
 
@@ -105,10 +105,10 @@ void handle_card(void)
     printf(") ");
 
     if(keystore_check_card(uid.buffer,uid.length)) {
-      printf("found - opening/closing door\n\r");
+      printf("found - opening/closing door\r\n");
       eventqueue_push(card);
     } else {
-      printf("not found - ignoring\n\r");
+      printf("not found - ignoring\r\n");
     }
   }
 }

@@ -52,7 +52,7 @@ void change_state(state_t new_state)
 {
   if (new_state == state)
     return;
-  printf("State: %s\n\r", state_to_string(new_state));
+  printf("State: %s\r\n", state_to_string(new_state));
   switch(new_state) {
     case reset:
       break;
@@ -137,12 +137,12 @@ void statemachine_task_event(void)
         case move_timeout:
           return change_state(state==opening?timeout_after_open:timeout_after_close);
         default:
-          printf("Error(state): event %s not allowed in state %s\n\r", event_to_string(event), state_to_string(state));
+          printf("Error(state): event %s not allowed in state %s\r\n", event_to_string(event), state_to_string(state));
           return;
       }
     case reset:
     case error:
-      printf("Error(state): Not accepting commands in state %s\n\r", state_to_string(state));
+      printf("Error(state): Not accepting commands in state %s\r\n", state_to_string(state));
       break; // Not accepting commands
     case manual_movement:
     case timeout_after_open:
@@ -166,7 +166,7 @@ void statemachine_task_event(void)
         case open_fin:
         case close_fin:
         case move_timeout:
-          printf("Error(state): event %s not allowed in state %s\n\r", event_to_string(event), state_to_string(state));
+          printf("Error(state): event %s not allowed in state %s\r\n", event_to_string(event), state_to_string(state));
           return;
       }
   }
