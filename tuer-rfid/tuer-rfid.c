@@ -141,6 +141,7 @@ int main(void)
     anyio_task();
     manual_task();
     ajar_task();
+    limits_task();
 
     int16_t bytes_received = anyio_bytes_received();
     if(bytes_received > 0)

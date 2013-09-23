@@ -56,7 +56,7 @@ uint8_t step_table [] =
 #define STEPPER_OUTPUT_BITMASK (~(0xF << STEPPER_FIRST_BIT ))
 
 volatile uint16_t step_cnt = 0;
-#define STEP_CNT_STOP (LENGTH_STEP_TABLE*210)
+#define STEP_CNT_STOP (LENGTH_STEP_TABLE*172)
 #define STEP_CNT_OFF  (STEP_CNT_STOP + 100)
 stepper_direction_t step_direction = dir_open;
 
@@ -65,6 +65,11 @@ inline void stepper_stop(void)
   STEPPER_PORT &= ~(0xF << STEPPER_FIRST_BIT | 1<<STEPPER_ENABLE_A_BIT | 1<<STEPPER_ENABLE_B_BIT);
   TCCR1B = 0; // no clock source
   TIMSK1 = 0; // disable timer interrupt
+
+  if(step_direction == dir_open)
+    eventqueue_push(open_fin);
+  else
+    eventqueue_push(close_fin);
 }
 
 static inline uint8_t stepper_handle(void)
@@ -75,12 +80,12 @@ static inline uint8_t stepper_handle(void)
   stepper_output <<= STEPPER_FIRST_BIT;
   STEPPER_PORT = (STEPPER_PORT & STEPPER_OUTPUT_BITMASK ) | stepper_output;
 
-  limits_t l = limits_get();
-  if((step_direction == dir_open && l == open) ||
-     (step_direction == dir_close && l == close) || l == both)
-    step_cnt = STEP_CNT_STOP + 1;
-
   if(step_cnt < STEP_CNT_STOP) {
+    limits_t l = limits_get();
+    if((step_direction == dir_open && l == open) ||
+       (step_direction == dir_close && l == close) || l == both)
+      step_cnt = STEP_CNT_STOP + 1;
+
     step_idx += (step_direction == dir_open) ? 1 : -1;
     step_idx %= LENGTH_STEP_TABLE;
   } else if(step_cnt == STEP_CNT_STOP) {
@@ -89,14 +94,8 @@ static inline uint8_t stepper_handle(void)
   }
 
   step_cnt++;
-  if(step_cnt >= STEP_CNT_OFF) {
-    if(step_direction == dir_open)
-      eventqueue_push(open_fin);
-    else
-      eventqueue_push(close_fin);
-
+  if(step_cnt >= STEP_CNT_OFF)
     return 0;
-  }
 
   return 1;
 }

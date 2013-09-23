@@ -27,6 +27,7 @@
 typedef enum { moving, open, close, both } limits_t;
 
 void limits_init(void);
+void limits_task(void);
 limits_t limits_get(void);
 const char* limits_to_string(limits_t limits);
 
