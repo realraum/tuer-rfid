@@ -25,15 +25,13 @@
 #include "limits.h"
 #include <LUFA/Drivers/Peripheral/ADC.h>
 
-#include <stdio.h>
-
 #define LIMITS_ADC_CHAN_NUM 8
 #define LIMITS_ADC_CHAN ADC_CHANNEL8
 
 #define LIMITS_RINGBUF_SIZE 5
 /* HINT: this is compared to a sliding sum not an average! */
-#define LIMITS_TH_CLOSE 500
-#define LIMITS_TH_OPEN 3200
+#define LIMITS_TH_CLOSE 800
+#define LIMITS_TH_OPEN 2700
 
 void limits_init(void)
 {
