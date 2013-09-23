@@ -23,72 +23,44 @@
 
 #include <avr/io.h>
 #include "limits.h"
+#include <LUFA/Drivers/Peripheral/ADC.h>
 
-#define LIMITS_PIN PINC
-#define LIMITS_PORT PORTC
-#define LIMITS_DDR DDRC
-#define LIMITS_OPEN 6
-#define LIMITS_CLOSE 7
+#define LIMITS_ADC_CHAN_NUM 8
+#define LIMITS_ADC_CHAN ADC_CHANNEL8
 
-#define LIMITS_LP_MAX 255
+#define LIMITS_RINGBUF_SIZE 5
+/* HINT: this is compared to a sliding sum not an average! */
+#define LIMITS_TH_CLOSE 250
+#define LIMITS_TH_OPEN 1000
 
 void limits_init(void)
 {
-  LIMITS_DDR = LIMITS_DDR & ~(1<<LIMITS_OPEN | 1<<LIMITS_CLOSE);
-  LIMITS_PORT |= (1<<LIMITS_OPEN | 1<<LIMITS_CLOSE);
-}
-
-uint8_t limits_get_close(uint8_t pin)
-{
-  static uint8_t last_state = 1<<LIMITS_CLOSE;
-  static uint8_t lp_cnt = 0;
-
-  uint8_t state = pin & (1<<LIMITS_CLOSE);
-  if(state != last_state)
-    lp_cnt++;
-  else
-    lp_cnt += lp_cnt ? -1 : 0;
-
-  if(lp_cnt >= LIMITS_LP_MAX) {
-    last_state = state;
-    lp_cnt = 0;
-  }
-
-  return last_state;
-}
-
-uint8_t limits_get_open(uint8_t pin)
-{
-  static uint8_t last_state = 1<<LIMITS_OPEN;
-  static uint8_t lp_cnt = 0;
-
-  uint8_t state = pin & (1<<LIMITS_OPEN);
-  if(state != last_state)
-    lp_cnt++;
-  else
-    lp_cnt += lp_cnt ? -1 : 0;
-
-  if(lp_cnt >= LIMITS_LP_MAX) {
-    last_state = state;
-    lp_cnt = 0;
-  }
-
-  return last_state;
+  ADC_Init(ADC_FREE_RUNNING | ADC_PRESCALE_128);
+  ADC_SetupChannel(LIMITS_ADC_CHAN_NUM);
+  ADC_StartReading(ADC_REFERENCE_INT2560MV | ADC_LEFT_ADJUSTED | LIMITS_ADC_CHAN);
 }
 
 limits_t limits_get(void)
 {
-  uint8_t tmp = LIMITS_PIN & (1<<LIMITS_OPEN | 1<<LIMITS_CLOSE);
-  if(!limits_get_open(tmp)) {
-    if(limits_get_close(tmp))
-      return open;
-    else
-      return both;
+  static uint8_t s = 0;
+  static uint8_t r[LIMITS_RINGBUF_SIZE] = { 0 };
+  static uint8_t idx = 0;
+
+  if(ADC_IsReadingComplete()) {
+    r[idx] = (ADC_GetResult()>>8);
+    idx = (idx + 1) % LIMITS_RINGBUF_SIZE;
+    s = 0;
+    uint8_t i;
+    for(i=0; i<LIMITS_RINGBUF_SIZE; ++i) s += r[i];
   }
-  else if(!limits_get_close(tmp))
+
+  if(s < LIMITS_TH_CLOSE)
     return close;
 
-  return moving;
+  if(s < LIMITS_TH_OPEN)
+    return moving;
+
+  return open;
 }
 
 const char* limits_to_string(limits_t limits)

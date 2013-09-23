@@ -25,10 +25,10 @@
 #include <stdio.h>
 #include "ajar.h"
 
-#define AJAR_PIN PIND
-#define AJAR_PORT PORTD
-#define AJAR_DDR DDRD
-#define AJAR_BIT 4
+#define AJAR_PIN PINC
+#define AJAR_PORT PORTC
+#define AJAR_DDR DDRC
+#define AJAR_BIT 7
 
 #define AJAR_LP_MAX 255
 
