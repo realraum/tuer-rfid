@@ -39,9 +39,9 @@ const char* state_to_string(state_t s)
     case error: return "error";
     case closing: return "closing";
     case opening: return "opening";
-    case manual_movement: return "manual movement";
-    case timeout_after_open: return "timeout after open";
-    case timeout_after_close: return "timeout after close";
+    case manual_movement: return "manual_movement";
+    case timeout_after_open: return "timeout_after_open";
+    case timeout_after_close: return "timeout_after_close";
     case closed: return "closed";
     case opened: return "opened";
   }

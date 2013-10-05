@@ -78,7 +78,7 @@ void handle_cmd(uint8_t cmd)
              eventqueue_push(cmd_toggle);
              break;
     case 's':
-             printf("Status: %s, %s, %s\r\n", limits_to_string(limits_get()), statemachine_get_state_as_string(), ajar_to_string(ajar_get()));
+             printf("Status: %s %s %s\r\n", limits_to_string(limits_get()), statemachine_get_state_as_string(), ajar_to_string(ajar_get()));
              break;
     /* case '0': ledmatrix_set(off); break; */
     /* case '1': ledmatrix_set(red); break; */
