@@ -30,7 +30,7 @@
 #define AJAR_DDR DDRC
 #define AJAR_BIT 7
 
-#define AJAR_LP_MAX 255
+#define AJAR_LP_MAX 20000
 
 void ajar_init(void)
 {
@@ -41,7 +41,7 @@ void ajar_init(void)
 ajar_t ajar_get(void)
 {
   static uint8_t last_state = (1<<AJAR_BIT);
-  static uint8_t lp_cnt = 0;
+  static uint16_t lp_cnt = 0;
 
   uint8_t state = AJAR_PIN & (1<<AJAR_BIT);
   if(state != last_state)
