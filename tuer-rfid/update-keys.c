@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
 
     key_num++;
     if(key_num > EEPROM_SIZE/sizeof(keyslot_t)) {
-      fprintf(stderr, "reached maximum number of key slots (%d), will ignore remaining keys\n", EEPROM_SIZE/sizeof(keyslot_t));
+      fprintf(stderr, "reached maximum number of key slots (%d), will ignore remaining keys\n", (int)(EEPROM_SIZE/sizeof(keyslot_t)));
       break;
     }
   }
