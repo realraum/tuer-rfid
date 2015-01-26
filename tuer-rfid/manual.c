@@ -22,6 +22,7 @@
  */
 
 #include <avr/io.h>
+#include <stdio.h>
 #include "manual.h"
 #include "eventqueue.h"
 
@@ -50,8 +51,10 @@ void manual_task(void)
     lp_cnt += lp_cnt ? -1 : 0;
 
   if(lp_cnt >= MANUAL_LP_MAX) {
-    if(!state)
+    if(!state) {
       eventqueue_push(btn_toggle);
+      printf("Info(manual): manual button has been pressed\r\n");
+    }
     last_state = state;
     lp_cnt = 0;
   }
