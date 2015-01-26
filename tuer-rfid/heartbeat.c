@@ -57,7 +57,7 @@ void heartbeat_init(void)
   TCCR0A = 1<<WGM01;           // OC0A and OC0B as normal output, WGM = 2 (CTC)
   TCCR0B = 1<<CS02 | 1<<CS00;  // Prescaler 1:1024
   OCR0A = 155;                 // (1+155)*1024 = 159744 -> ~10 ms @ 16 MHz
-  TCNT2 = 0;
+  TCNT0 = 0;
   TIMSK0 = 1<<OCIE0A;
 
   FASTBEAT_DDR |= 1<<FASTBEAT_BIT;
