@@ -45,18 +45,4 @@ LUFA_OPTS += -D USB_PRODUCT="L\"realraum door firmware\"" -D USB_PRODUCT_LEN=22
 
 LUFA_COMPONENTS := USB USBCLASS TWI SERIAL
 
-CLEAN_TARGETS += clean-pdf clean-update-keys
-
 include $(SPREADAVR_PATH)/include.mk
-
-update-keys: update-keys.c
-	gcc -o $@ $<
-
-clean-update-keys:
-	rm -f update-keys
-
-pdf: statemachine.dot
-	dot -Tpdf statemachine.dot -o statemachine.pdf
-
-clean-pdf:
-	rm -f statemachine.pdf
