@@ -77,6 +77,9 @@ void handle_cmd(uint8_t cmd)
     case 't':
              eventqueue_push(cmd_toggle);
              break;
+    case 'l':
+             printf("Current Postion raw ADC sum: %d\r\n",limits_get_raw_for_tuning());
+             break;
     case 's':
              printf("Status: %s %s %s\r\n", limits_to_string(limits_get()), statemachine_get_state_as_string(), ajar_to_string(ajar_get()));
              break;

@@ -69,6 +69,11 @@ limits_t limits_get(void)
   return open;
 }
 
+uint16_t limits_get_raw_for_tuning(void)
+{
+  return sum;
+}
+
 const char* limits_to_string(limits_t limits)
 {
   switch(limits) {
