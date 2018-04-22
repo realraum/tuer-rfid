@@ -1,5 +1,6 @@
-contrib/avr-utils
-contrib/.spreadavr.prepared
+/contrib/avr-utils
+/contrib/.spreadavr.prepared
+/tools/update-keys
 */*.a
 */*.o
 */*.d
