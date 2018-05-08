@@ -27,5 +27,5 @@ all: update-spreadavr
 	touch $@
 
 update-spreadavr: .spreadavr.prepared
-	cd avr-utils/; git pull
+	git -C avr-utils pull
 	$(MAKE) -C avr-utils/contrib/
