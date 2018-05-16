@@ -56,7 +56,7 @@ uint8_t step_table [] =
 #define STEPPER_OUTPUT_BITMASK (~(0xF << STEPPER_FIRST_BIT ))
 
 volatile uint16_t step_cnt = 0;
-#define STEP_CNT_STOP (LENGTH_STEP_TABLE*120)
+#define STEP_CNT_STOP (LENGTH_STEP_TABLE*172)
 #define STEP_CNT_STOP_PLUS_EXTRA  (STEP_CNT_STOP + (LENGTH_STEP_TABLE*20))
 stepper_direction_t step_direction = dir_open;
 
