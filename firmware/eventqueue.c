@@ -39,9 +39,19 @@ event_t eventqueue_pop(void)
   return RingBuffer_Remove(&event_queue);
 }
 
+void eventqueue_push_from_isr(event_t event)
+{
+  // loosing events must never happen but if we don't check this here, it's even worse
+  if (RingBuffer_IsFull(&event_queue))
+    return;
+  RingBuffer_Insert(&event_queue,event);
+}
+
 void eventqueue_push(event_t event)
 {
-  RingBuffer_Insert(&event_queue,event);
+  cli();
+  eventqueue_push_from_isr(event);
+  sei();
 }
 
 const char* event_to_string(event_t event)

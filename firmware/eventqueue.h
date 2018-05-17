@@ -28,6 +28,7 @@ typedef enum { none, cmd_open, cmd_close, cmd_toggle, btn_toggle, card, close_fi
 
 void eventqueue_init(void);
 event_t eventqueue_pop(void);
+void eventqueue_push_from_isr(event_t);
 void eventqueue_push(event_t);
 const char* event_to_string(event_t event);
 

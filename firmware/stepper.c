@@ -67,9 +67,9 @@ inline void stepper_stop(void)
   TIMSK1 = 0; // disable timer interrupt
 
   if(step_direction == dir_open)
-    eventqueue_push(open_fin);
+    eventqueue_push_from_isr(open_fin);
   else
-    eventqueue_push(close_fin);
+    eventqueue_push_from_isr(close_fin);
 }
 
 static inline uint8_t stepper_handle(void)
@@ -89,7 +89,7 @@ static inline uint8_t stepper_handle(void)
       step_cnt = STEP_CNT_STOP + 1;
 
   } else if(step_cnt == STEP_CNT_STOP) {
-    eventqueue_push(move_timeout);
+    eventqueue_push_from_isr(move_timeout);
     return 0; //stop
   }
 
