@@ -28,8 +28,8 @@ typedef enum { moving, open, close, both } limits_t;
 
 void limits_init(void);
 void limits_task(void);
+uint16_t limits_get_raw(void);
 limits_t limits_get(void);
 const char* limits_to_string(limits_t limits);
-uint16_t limits_get_raw_for_tuning(void);
 
 #endif

@@ -78,7 +78,7 @@ void handle_cmd(uint8_t cmd)
              eventqueue_push(cmd_toggle);
              break;
     case 'l':
-             printf("Current Postion raw ADC sum: %d\r\n",limits_get_raw_for_tuning());
+             printf("Current Postion raw ADC sum: %d\r\n",limits_get_raw());
              break;
     case 's':
              printf("Status: %s %s %s\r\n", limits_to_string(limits_get()), statemachine_get_state_as_string(), ajar_to_string(ajar_get()));
@@ -144,7 +144,6 @@ int main(void)
     anyio_task();
     manual_task();
     ajar_task();
-    limits_task();
 
     int16_t bytes_received = anyio_bytes_received();
     if(bytes_received > 0)
