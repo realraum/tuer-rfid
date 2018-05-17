@@ -48,13 +48,14 @@ void limits_task(void)
   static uint8_t idx = 0;
 
   if(ADC_IsReadingComplete()) {
-    r[idx] = ADC_GetResult();
-    idx = (idx + 1) % LIMITS_RINGBUF_SIZE;
+    uint8_t x = r[idx];
+    uint8_t y = ADC_GetResult();
+
     cli();
-    sum = 0;
-    uint8_t i;
-    for(i=0; i<LIMITS_RINGBUF_SIZE; ++i) sum += r[i];
+    sum = (sum - x) + y;
     sei();
+
+    idx = (idx + 1) % LIMITS_RINGBUF_SIZE;
   }
 }
 
