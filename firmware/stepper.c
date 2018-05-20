@@ -94,10 +94,7 @@ static inline uint8_t stepper_handle(void)
   }
 
   step_cnt++;
-  if(step_cnt >= STEP_CNT_STOP_PLUS_EXTRA)
-    return 0; //stop
-
-  return 1; // continue running
+  return step_cnt < STEP_CNT_STOP_PLUS_EXTRA;
 }
 
 void stepper_init(void)
