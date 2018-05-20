@@ -30,8 +30,8 @@
 
 #define LIMITS_RINGBUF_SIZE 4
 /* HINT: this is compared to a sliding sum not an average! */
-#define LIMITS_TH_CLOSE 800
-#define LIMITS_TH_OPEN 2700
+#define LIMITS_TH_CLOSE 160 * LIMITS_RINGBUF_SIZE
+#define LIMITS_TH_OPEN  540 * LIMITS_RINGBUF_SIZE
 
 void limits_init(void)
 {
