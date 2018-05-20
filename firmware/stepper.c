@@ -56,8 +56,7 @@ uint8_t step_table [] =
 #define STEPPER_OUTPUT_BITMASK (~(0xF << STEPPER_FIRST_BIT ))
 
 volatile uint16_t step_cnt = 0;
-#define STEP_CNT_STOP (LENGTH_STEP_TABLE*120)
-#define STEP_CNT_STOP_PLUS_EXTRA  (STEP_CNT_STOP + (LENGTH_STEP_TABLE*20))
+#define STEP_CNT_STOP (LENGTH_STEP_TABLE*150)
 stepper_direction_t step_direction = dir_open;
 
 inline void stepper_stop(void)
@@ -82,19 +81,16 @@ static inline uint8_t stepper_handle(void)
   step_idx += (step_direction == dir_open) ? 1 : -1;
   step_idx %= LENGTH_STEP_TABLE;
 
-  if(step_cnt < STEP_CNT_STOP) {
+  if(step_cnt++ < STEP_CNT_STOP) {
     limits_t l = limits_get();
     if((step_direction == dir_open && l == open) ||
        (step_direction == dir_close && l == close) || l == both)
-      step_cnt = STEP_CNT_STOP + 1;
-
-  } else if(step_cnt == STEP_CNT_STOP) {
+      return 0;
+  } else {
     eventqueue_push_from_isr(move_timeout);
     return 0; //stop
   }
-
-  step_cnt++;
-  return step_cnt < STEP_CNT_STOP_PLUS_EXTRA;
+  return 1;
 }
 
 void stepper_init(void)
