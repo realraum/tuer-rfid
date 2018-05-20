@@ -28,7 +28,7 @@
 #define LIMITS_ADC_CHAN_NUM 8
 #define LIMITS_ADC_CHAN ADC_CHANNEL8
 
-#define LIMITS_RINGBUF_SIZE 5
+#define LIMITS_RINGBUF_SIZE 4
 /* HINT: this is compared to a sliding sum not an average! */
 #define LIMITS_TH_CLOSE 800
 #define LIMITS_TH_OPEN 2700
@@ -52,8 +52,8 @@ ISR(ADC_vect)
   idx = (idx + 1) % LIMITS_RINGBUF_SIZE;
   sum = 0;
   uint8_t i;
-      // a sliding sum might be faster but the size is of the ringbuffer is low and
-      // it is safer to always compute the sum
+      // a sliding sum might be faster but the size of the ringbuffer is low and
+      // it is safer to always compute the sum from scratch
   for(i=0; i<LIMITS_RINGBUF_SIZE; ++i) sum += r[i];
 }
 
