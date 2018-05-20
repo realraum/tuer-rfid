@@ -30,14 +30,15 @@
 
 #define LIMITS_RINGBUF_SIZE 4
 /* HINT: this is compared to a sliding sum not an average! */
-#define LIMITS_TH_CLOSE 160 * LIMITS_RINGBUF_SIZE
-#define LIMITS_TH_OPEN  540 * LIMITS_RINGBUF_SIZE
+#define LIMITS_TH_CLOSE 250 * LIMITS_RINGBUF_SIZE
+#define LIMITS_TH_OPEN  550 * LIMITS_RINGBUF_SIZE
 
 void limits_init(void)
 {
   ADC_Init(ADC_FREE_RUNNING | ADC_PRESCALE_128);
   ADC_SetupChannel(LIMITS_ADC_CHAN_NUM);
   ADC_StartReading(ADC_REFERENCE_AVCC | ADC_RIGHT_ADJUSTED | LIMITS_ADC_CHAN);
+  ADCSRA |= (1 << ADIE);
 }
 
 // sum must not be used directly
@@ -48,7 +49,7 @@ static uint16_t r[LIMITS_RINGBUF_SIZE] = { 0 };
 static uint8_t idx = 0;
 ISR(ADC_vect)
 {
-  r[idx] = ADC_GetResult();
+  r[idx] = ADC;
   idx = (idx + 1) % LIMITS_RINGBUF_SIZE;
   sum = 0;
   uint8_t i;
