@@ -28,10 +28,17 @@
 #define LIMITS_ADC_CHAN_NUM 8
 #define LIMITS_ADC_CHAN ADC_CHANNEL8
 
+#define LIMITS_RANGE_MIN  77
+#define LIMITS_RANGE_MAX 772
+
 #define LIMITS_RINGBUF_SIZE 4
 /* HINT: this is compared to a sliding sum not an average! */
 #define LIMITS_TH_CLOSE 275 * LIMITS_RINGBUF_SIZE
 #define LIMITS_TH_OPEN  600 * LIMITS_RINGBUF_SIZE
+
+#define LIMITS_HYSTERESIS ((LIMITS_RANGE_MAX) - (LIMITS_RANGE_MIN)) * LIMITS_RINGBUF_SIZE / 20
+#define LIMITS_TH_CLOSE_HIGH ((LIMITS_TH_CLOSE) + (LIMITS_HYSTERESIS))
+#define LIMITS_TH_OPEN_LOW   ((LIMITS_TH_OPEN)  - (LIMITS_HYSTERESIS))
 
 void limits_init(void)
 {
@@ -43,6 +50,51 @@ void limits_init(void)
 
 // sum must not be used directly
 static uint16_t sum = 0;
+static bool state_initialized = false;
+static limits_t state = open;
+
+// without applying hysteresis, used only for initialization
+static limits_t sum_to_state(uint16_t s)
+{
+  if(s < LIMITS_TH_CLOSE)
+    return close;
+
+  if(s < LIMITS_TH_OPEN)
+   return moving;
+
+  return open;
+}
+
+// must be called from ISR or with disabled interrupts
+static void update_state(void)
+{
+  if (state_initialized)
+  {
+    if (sum < LIMITS_TH_CLOSE)
+    {
+      state = close;
+    }
+    else if (sum < LIMITS_TH_CLOSE_HIGH)
+    {
+    }
+    else if (sum < LIMITS_TH_OPEN_LOW)
+    {
+      state = moving;
+    }
+    else if (sum < LIMITS_TH_OPEN)
+    {
+    }
+    else
+    {
+      state = open;
+    }
+  }
+  else
+  {
+    state = sum_to_state(sum);
+    state_initialized = true;
+  }
+}
 
 // these variables must not be used by anything outside of the ISR
 static uint16_t r[LIMITS_RINGBUF_SIZE] = { 0 };
@@ -56,6 +108,8 @@ ISR(ADC_vect)
       // a sliding sum might be faster but the size of the ringbuffer is low and
       // it is safer to always compute the sum from scratch
   for(i=0; i<LIMITS_RINGBUF_SIZE; ++i) sum += r[i];
+
+  update_state();
 }
 
 inline uint16_t limits_get_raw(void)
@@ -67,17 +121,18 @@ inline uint16_t limits_get_raw(void)
   return s;
 }
 
+static limits_t limits_get_state(void)
+{
+  cli();
+  limits_t st = state;
+  sei();
+
+  return st;
+}
+
 limits_t limits_get(void)
 {
-  uint16_t s = limits_get_raw();
-
-  if(s < LIMITS_TH_CLOSE)
-    return close;
-
-  if(s < LIMITS_TH_OPEN)
-   return moving;
-
-  return open;
+  return limits_get_state();
 }
 
 const char* limits_to_string(limits_t limits)
