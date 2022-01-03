@@ -81,7 +81,9 @@ static inline uint8_t stepper_handle(void)
   step_idx += (step_direction == dir_open) ? 1 : -1;
   step_idx %= LENGTH_STEP_TABLE;
 
-  if(step_cnt++ < STEP_CNT_STOP) {
+  if(step_cnt++ < STEP_CNT_STOP
+    && (step_direction != dir_close || limits_check_motor_moving()) //if closing, stop motor if blocked
+    ) {
     limits_t l = limits_get_for_motor();
     if((step_direction == dir_open && l == open) ||
        (step_direction == dir_close && l == close) || l == both)
@@ -109,6 +111,8 @@ uint8_t stepper_start(stepper_direction_t direction)
   OCR1A = 150;
   TCNT1 = 0;
   TIMSK1 = 1<<OCIE1A;
+
+  limits_reset_motor_move_check();
 
   return 1;
 }

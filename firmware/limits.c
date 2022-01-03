@@ -49,6 +49,9 @@
 #define LIMITS_MOTOR_EXTRA_MOVEMENT_TH_CLOSE (LIMITS_TH_CLOSE - (LIMITS_TH_CLOSE - (LIMITS_RANGE_MIN*LIMITS_RINGBUF_SIZE))/3)
 #define LIMITS_MOTOR_EXTRA_MOVEMENT_TH_OPEN  (LIMITS_TH_OPEN + ((LIMITS_RANGE_MAX*LIMITS_RINGBUF_SIZE) - LIMITS_TH_OPEN)/3)
 
+#define LIMITS_DIFFERENCE_TH_FOR_NO_MOVEMENT 2 //minimum difference between adc sampling sums to count as movement
+#define LIMITS_MAX_COUNT_FOR_NO_MOVEMENT 10    //number of counts of sum difference being below LIMITS_DIFFERENCE_TH_FOR_NO_MOVEMENT before motor stops
+
 void limits_init(void)
 {
   ADC_Init(ADC_FREE_RUNNING | ADC_PRESCALE_128);
@@ -58,8 +61,11 @@ void limits_init(void)
 }
 
 // sum must not be used directly
+// the sum is like an average of 4 ADC sample values where we avoid the divison by LIMITS_RINGBUF_SIZE for performance reasons
 static uint16_t sum = 0;
+static uint16_t prev_sum = 0;
 static bool state_initialized = false;
+static uint8_t motor_not_moving_ctr_ = 0;
 static limits_t state = open;
 static limits_t state_for_motor = open; //extra state for motor, so motor moves further that LIMITS_TH_CLOSE/OPEN.  (see https://github.com/realraum/tuer-rfid/issues/2 )
 
@@ -167,6 +173,32 @@ limits_t limits_get_for_motor(void)
   sei();
 
   return st;
+}
+
+//these functions should only ever be called from the same context and same function, so that motor_not_moving_ctr_ does not need to be locked
+void limits_reset_motor_move_check(void)
+{
+  motor_not_moving_ctr_ = 0;
+}
+
+//these functions should only ever be called from the same context and same function, so that motor_not_moving_ctr_ does not need to be locked
+uint8_t limits_check_motor_moving(void)
+{
+  uint16_t cur_sum = limits_get_raw();
+  int16_t diff = prev_sum - cur_sum;
+  prev_sum = cur_sum;
+  bool adc_values_currently_changing = (diff > LIMITS_DIFFERENCE_TH_FOR_NO_MOVEMENT || diff < -1* LIMITS_DIFFERENCE_TH_FOR_NO_MOVEMENT);
+
+  if (adc_values_currently_changing) {
+    if (motor_not_moving_ctr_ > 1) {
+        motor_not_moving_ctr_--;
+        motor_not_moving_ctr_--;
+      }
+  } else if (motor_not_moving_ctr_ < 0xff) {
+    motor_not_moving_ctr_++;
+  }
+
+  return (motor_not_moving_ctr_ < LIMITS_MAX_COUNT_FOR_NO_MOVEMENT);
 }
 
 const char* limits_to_string(limits_t limits)

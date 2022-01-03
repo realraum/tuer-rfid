@@ -31,6 +31,8 @@ void limits_task(void);
 uint16_t limits_get_raw(void);
 limits_t limits_get(void);
 limits_t limits_get_for_motor(void);
+void limits_reset_motor_move_check(void);
+uint8_t limits_check_motor_moving(void);
 const char* limits_to_string(limits_t limits);
 
 #endif
