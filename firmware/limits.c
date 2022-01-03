@@ -28,17 +28,26 @@
 #define LIMITS_ADC_CHAN_NUM 8
 #define LIMITS_ADC_CHAN ADC_CHANNEL8
 
-#define LIMITS_RANGE_MIN  77
-#define LIMITS_RANGE_MAX 772
+#define LIMITS_RANGE_MIN 99 //maximum closed
+#define LIMITS_RANGE_MAX 792 //maximum opened
+
+/// HINT: Voltage Measurement *200 = LIMITS value
 
 #define LIMITS_RINGBUF_SIZE 4
 /* HINT: this is compared to a sliding sum not an average! */
-#define LIMITS_TH_CLOSE 400 * LIMITS_RINGBUF_SIZE
-#define LIMITS_TH_OPEN  550 * LIMITS_RINGBUF_SIZE
+// LIMITS_TH should be close to / just beyond actual lock/unlock position
+#define LIMITS_TH_CLOSE 407 * LIMITS_RINGBUF_SIZE //1.9V
+#define LIMITS_TH_OPEN  510 * LIMITS_RINGBUF_SIZE
 
-#define LIMITS_HYSTERESIS ((LIMITS_RANGE_MAX) - (LIMITS_RANGE_MIN)) * LIMITS_RINGBUF_SIZE / 20
+// HYSTERESIS is how detection of state will have some drift in both directions
+#define LIMITS_HYSTERESIS ((LIMITS_RANGE_MAX) - (LIMITS_RANGE_MIN)) * LIMITS_RINGBUF_SIZE / 80 //width of the hysteresis
 #define LIMITS_TH_CLOSE_HIGH ((LIMITS_TH_CLOSE) + (LIMITS_HYSTERESIS))
 #define LIMITS_TH_OPEN_LOW   ((LIMITS_TH_OPEN)  - (LIMITS_HYSTERESIS))
+
+// EXTRA_MOVEMENT is how far the motor will move beyond LIMITS_TH
+// #define LIMITS_MOTOR_EXTRA_MOVEMENT 150 * LIMITS_RINGBUF_SIZE //add / substract to motor movement beyond LIMITS_TH (see https://github.com/realraum/tuer-rfid/issues/2 )
+#define LIMITS_MOTOR_EXTRA_MOVEMENT_TH_CLOSE (LIMITS_TH_CLOSE - (LIMITS_TH_CLOSE - (LIMITS_RANGE_MIN*LIMITS_RINGBUF_SIZE))/3)
+#define LIMITS_MOTOR_EXTRA_MOVEMENT_TH_OPEN  (LIMITS_TH_OPEN + ((LIMITS_RANGE_MAX*LIMITS_RINGBUF_SIZE) - LIMITS_TH_OPEN)/3)
 
 void limits_init(void)
 {
@@ -52,6 +61,7 @@ void limits_init(void)
 static uint16_t sum = 0;
 static bool state_initialized = false;
 static limits_t state = open;
+static limits_t state_for_motor = open; //extra state for motor, so motor moves further that LIMITS_TH_CLOSE/OPEN.  (see https://github.com/realraum/tuer-rfid/issues/2 )
 
 // without applying hysteresis, used only for initialization
 static limits_t sum_to_state(uint16_t s)
@@ -65,9 +75,23 @@ static limits_t sum_to_state(uint16_t s)
   return open;
 }
 
+static limits_t sum_to_state_for_motor(uint16_t s)
+{
+  if(s < LIMITS_MOTOR_EXTRA_MOVEMENT_TH_CLOSE)
+    return close;
+
+  if(s < LIMITS_MOTOR_EXTRA_MOVEMENT_TH_OPEN)
+   return moving;
+
+  return open;
+}
+
 // must be called from ISR or with disabled interrupts
 static void update_state(void)
 {
+  state_for_motor = sum_to_state_for_motor(sum);
+
+  //calc hysteresis for state
   if (state_initialized)
   {
     if (sum < LIMITS_TH_CLOSE)
@@ -133,6 +157,16 @@ static limits_t limits_get_state(void)
 limits_t limits_get(void)
 {
   return limits_get_state();
+}
+
+
+limits_t limits_get_for_motor(void)
+{
+  cli();
+  limits_t st = state_for_motor;
+  sei();
+
+  return st;
 }
 
 const char* limits_to_string(limits_t limits)

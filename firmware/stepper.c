@@ -82,10 +82,10 @@ static inline uint8_t stepper_handle(void)
   step_idx %= LENGTH_STEP_TABLE;
 
   if(step_cnt++ < STEP_CNT_STOP) {
-    limits_t l = limits_get();
+    limits_t l = limits_get_for_motor();
     if((step_direction == dir_open && l == open) ||
        (step_direction == dir_close && l == close) || l == both)
-      return 0;
+      return 0; //stop
   } else {
     eventqueue_push_from_isr(move_timeout);
     return 0; //stop

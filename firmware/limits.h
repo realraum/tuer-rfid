@@ -30,6 +30,7 @@ void limits_init(void);
 void limits_task(void);
 uint16_t limits_get_raw(void);
 limits_t limits_get(void);
+limits_t limits_get_for_motor(void);
 const char* limits_to_string(limits_t limits);
 
 #endif
