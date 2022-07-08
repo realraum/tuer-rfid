@@ -50,7 +50,7 @@
 #define LIMITS_MOTOR_EXTRA_MOVEMENT_TH_OPEN  (LIMITS_TH_OPEN + ((LIMITS_RANGE_MAX*LIMITS_RINGBUF_SIZE) - LIMITS_TH_OPEN)/3)
 
 #define LIMITS_DIFFERENCE_TH_FOR_NO_MOVEMENT 2 //minimum difference between adc sampling sums to count as movement
-#define LIMITS_MAX_COUNT_FOR_NO_MOVEMENT 10    //number of counts of sum difference being below LIMITS_DIFFERENCE_TH_FOR_NO_MOVEMENT before motor stops
+#define LIMITS_MAX_COUNT_FOR_NO_MOVEMENT 12    //number of counts of sum difference being below LIMITS_DIFFERENCE_TH_FOR_NO_MOVEMENT before motor stops
 
 void limits_init(void)
 {
